@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizador Express & Calidad Superior</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --accent: #22c55e;
+            --warning: #eab308;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 32px 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .badge-fast {
+            display: inline-block;
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 99px;
+            margin: 20px 0 28px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 33%;
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .step-card {
+            display: none;
+        }
+
+        .step-card.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .opt-btn {
+            background: #0f172a;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: var(--text-main);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .opt-btn:hover {
+            border-color: var(--primary);
+            background: rgba(249, 115, 22, 0.05);
+        }
+
+        .opt-btn.selected {
+            border-color: var(--primary);
+            background: rgba(249, 115, 22, 0.15);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-nav-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            color: white;
+            border-color: white;
+        }
+
+        .result-box {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .price-display {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 8px 0;
+        }
+
+        .perk-list {
+            list-style: none;
+            margin: 16px 0;
+        }
+
+        .perk-list li {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #cbd5e1;
+        }
+
+        .perk-list li::before {
+            content: "✓";
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .urgency-badge {
+            background: rgba(34, 197, 94, 0.15);
+            border-left: 4px solid var(--accent);
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            color: #4ade80;
+            margin: 16px 0;
+            border-radius: 4px;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            width: 100%;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn-whatsapp:hover {
+            background: #20ba59;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="badge-fast">⚡ Calidad Premium en Herrería</div>
+        <h1>Cotizá tu Puerta Pantográfica</h1>
+        <p class="subtitle">Chapa N°18, chapa plegada y la mayor calidad del país con envío en 7 días.</p>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- PASO 1: Medidas -->
+    <div class="step-card active" id="step1">
+        <div class="step-title">1. Medidas de la abertura</div>
+        <div class="row-2">
+            <div class="form-group">
+                <label>Ancho (en cm)</label>
+                <input type="text" id="inputAncho" placeholder="Ej: 80">
+            </div>
+            <div class="form-group">
+                <label>Alto (en cm)</label>
+                <input type="text" id="inputAlto" placeholder="Ej: 200">
+            </div>
+        </div>
+        <div class="btn-nav-group">
+            <button class="btn btn-primary" style="flex: 1;" onclick="nextStep(1)">Continuar ➔</button>
+        </div>
+    </div>
+
+    <!-- PASO 2: Terminaciones -->
+    <div class="step-card" id="step2">
+        <div class="step-title">2. Detalles y Referencia</div>
+        <div class="form-group">
+            <label>Tipo de cerradura o accesorios</label>
+            <input type="text" id="inputDetalle" placeholder="Ej: Cerradura doble paleta, pintura epoxi...">
+        </div>
+        <div class="form-group">
+            <label>¿Cuál es tu urgencia?</label>
+            <select id="selectUrgencia">
+                <option value="inmediata">Entrega en 7 días (Envío exprés)</option>
+                <option value="planificacion">Planificando para las próximas semanas</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Enlace o nombre del competidor (Opcional)</label>
+            <input type="text" id="inputReferencia" placeholder="Link o nombre donde viste precio similar">
+        </div>
+        <div class="btn-nav-group">
+            <button class="btn btn-secondary" onclick="prevStep(2)">Atrás</button>
+            <button class="btn btn-primary" onclick="calcularYMostrarResultado()">Ver Presupuesto y Calidad ➔</button>
+        </div>
+    </div>
+
+    <!-- PASO 3: Resumen y WhatsApp -->
+    <div class="step-card" id="step3">
+        <div class="result-box">
+            <h3>Puerta Pantográfica Premium</h3>
+            <p id="resumenMedidas" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Medidas: 80 x 200 cm</p>
+
+            <div class="urgency-badge">
+                🚀 <strong>Despacho garantizado en 7 días a destino.</strong>
+            </div>
+
+            <ul class="perk-list">
+                <li>Chapa N°18 de la mejor calidad nacional.</li>
+                <li>Estructura de chapa plegada ultrarresistente.</li>
+                <li>La puerta más elegida y vendida del país.</li>
+                <li>Asesoramiento técnico directo.</li>
+            </ul>
+        </div>
+
+        <a href="#" target="_blank" class="btn-whatsapp" id="btnWhatsappLink">
+            <span>💬 Comprar Puerta Pantográfica</span>
+        </a>
+
+        <div style="text-align: center; margin-top: 14px;">
+            <button class="btn btn-secondary" onclick="restart()">🔄 Modificar Medidas</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const CONFIG = {
+        telefonoWhatsApp: "5493854687997",
+        nombreTaller: "DaacDeco"
+    };
+
+    let leadData = { ancho: "", alto: "", detalle: "", urgencia: "", referencia: "" };
+
+    function updateProgress(step) {
+        const bar = document.getElementById("progressBar");
+        bar.style.width = (step * 33) + "%";
+    }
+
+    function nextStep(current) {
+        if (current === 1) {
+            leadData.ancho = document.getElementById("inputAncho").value || "A definir";
+            leadData.alto = document.getElementById("inputAlto").value || "A definir";
+        }
+        document.getElementById(`step${current}`).classList.remove("active");
+        document.getElementById(`step${current + 1}`).classList.add("active");
+        updateProgress(current + 1);
+    }
+
+    function prevStep(current) {
+        document.getElementById(`step${current}`).classList.remove("active");
+        document.getElementById(`step${current - 1}`).classList.add("active");
+        updateProgress(current - 1);
+    }
+
+    function calcularYMostrarResultados() {
+        leadData.detalle = document.getElementById("inputDetalle").value || "Estándar";
+        leadData.urgencia = document.getElementById("selectUrgencia").value;
+        leadData.referencia = document.getElementById("inputReferencia").value || "Ninguna";
+
+        document.getElementById("resumenMedidas").textContent = `Medidas: ${leadData.ancho} x ${leadData.alto} cm | Detalles: ${leadData.detalle}`;
+
+        let mensaje = `Hola *${CONFIG.nombreTaller}*, quiero comprar una puerta pantográfica cotizada en la web:%0A%0A`;
+        mensaje += `📏 *Medidas:* ${leadData.ancho} x ${leadData.alto} cm%0A`;
+        mensaje += `📌 *Detalles:* ${leadData.detalle}%0A`;
+        mensaje += `⏳ *Plazo:* ${leadData.urgencia === 'inmediata' ? 'Entrega en 7 días' : 'Planificación'}%0A`;
+        mensaje += `🔗 *Referencia externa:* ${leadData.referencia}`;
+        mensaje += `%0A%0A¿Cómo avanzamos con el pago y el envío?`;
+
+        const waUrl = `https://wa.me/${CONFIG.telefonoWhatsApp}?text=${mensaje}`;
+        document.getElementById("btnWhatsappLink").href = waUrl;
+
+        document.getElementById("step2").classList.remove("active");
+        document.getElementById("step3").classList.add("active");
+        updateProgress(3);
+    }
+
+    function restart() {
+        document.getElementById("step3").classList.remove("active");
+        document.getElementById("step1").classList.add("active");
+        updateProgress(1);
+    }
+
+    function calcularYMostrarResultado() {
+        calcularYMostrarResultados();
+    }
+</script>
+</body>
+</html>
